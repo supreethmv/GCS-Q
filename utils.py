@@ -4,9 +4,9 @@ import os
 import json
 import networkx as nx
 
-#import dimod
-#from dwave.system.samplers import DWaveSampler
-#from dwave.system.composites import EmbeddingComposite
+import dimod
+from dwave.system.samplers import DWaveSampler
+from dwave.system.composites import EmbeddingComposite
 
 import numpy as np
 
