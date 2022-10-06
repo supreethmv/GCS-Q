@@ -174,11 +174,11 @@ def dwave_solver(linear, quadratic, offset = 0.0, runs=1000):
     :return
     sample_set: Samples and any other data returned by dimod samplers.
     """
-    
+    # DWaveSampler()
     vartype = dimod.BINARY
 
     bqm = dimod.BinaryQuadraticModel(linear, quadratic, 0.0, vartype)
-    sampler = EmbeddingComposite(DWaveSampler())
+    sampler = EmbeddingComposite(DWaveSampler(solver={'topology__type': 'chimera'}))
     sample_set = sampler.sample(bqm, num_reads=runs)
     return sample_set
 
