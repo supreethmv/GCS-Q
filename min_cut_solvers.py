@@ -178,7 +178,7 @@ def exact_solver(linear, quadratic, offset = 0.0):
 
 
 
-def dwave_solver(linear, quadratic, offset = 0.0, runs=1000):
+def dwave_solver(linear, quadratic, offset = 0.0, runs=10000):
     """
     Solve Ising hamiltonian or qubo problem instance using dimod API for using dwave system.
 
