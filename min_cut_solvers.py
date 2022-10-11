@@ -553,7 +553,7 @@ def min_cut_qiskit_QAOA(n_agents, induced_subgraph_game, reps = 1, simulator = "
 
 
 
-def min_cut_dwave_annealer(n_agents, induced_subgraph_game, save_log=False, name_folder='distribution', n_samples= 1000, n_run=1):
+def min_cut_dwave_annealer(n_agents, induced_subgraph_game, save_log=False, name_folder='distribution', n_samples= 2000, n_run=1):
     linear, quadratic = get_linear_quadratic_coeffs(n_agents, induced_subgraph_game)
     sample = dwave_solver(linear, quadratic, offset = 0.0, runs=n_samples)
     # if save_log:
