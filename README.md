@@ -1,11 +1,6 @@
-# GCS-Q
-Quantum-supported Graph Coalition Structure generation
-
-
-# BILP-Q: Quantum Coalition Structure Generation
-This repository contains the code to reproduce the results presented in the paper *BILP-Q: 
-Quantum Coalition Structure Generation*, published in the 
-[19th ACM International Conference on Computing Frontiers (CF'22)](https://www.computingfrontiers.org/2022/index.html).
+# GCS-Q: Quantum-supported Graph Coalition Structure generation
+This repository contains the code to reproduce the results presented in the paper *GCS-Q: Quantum-supported Graph Coalition Structure Generation*, submitted to the 
+[20th ACM International Conference on Computing Frontiers (CF'23)](https://www.computingfrontiers.org/2023/cfp.html).
 
 # Contents
 [Description](#desc)
@@ -89,5 +84,5 @@ the experiments:
 ## Issues
 
 For any issues or questions related to the code, open a new git issue or send a mail to
-[s8sumyso@stud.uni-saarland.de](s8sumyso@stud.uni-saarland.de) or 
+[supreeth.mysore@dfki.de](supreeth.mysore@dfki.de) or 
 [antonio.macaluso@dfki.de](antonio.macaluso@dfki.de).
