@@ -5,11 +5,9 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Qiskit 
-from qiskit import BasicAer
-from qiskit.algorithms import QAOA, NumPyMinimumEigensolver
+from qiskit.algorithms import NumPyMinimumEigensolver
 from qiskit_optimization.algorithms import MinimumEigenOptimizer
 from qiskit_optimization import QuadraticProgram
-from qiskit.utils import QuantumInstance
 
 # Dwaves
 import dimod
@@ -42,28 +40,6 @@ def create_dir(path, log=False):
 
 
 #################################### SOLVER
-
-def qaoa_for_qubo(qubo, p=1):                   # QAOA solver for QUBO
-  """
-  qaoa_for_qubo solves the given QUBO using QAOA
-  :param
-  qubo: CSG problem instance reduced to the form of qubo.
-  p: Integerr specifying the number of layers in the QAOA circuit.
-
-  :return
-  result: An array of binary digits which denotes the solutionn of the input qubo problem
-  """
-  aqua_globals.random_seed = 123
-  initial_point = [np.random.uniform(2*np.pi) for _ in range(2*p)]
-  quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),       #qasm simulator
-                                     seed_simulator=aqua_globals.random_seed,
-                                     seed_transpiler=aqua_globals.random_seed)
-  qaoa_mes = QAOA(quantum_instance=quantum_instance, initial_point=initial_point,p=p)
-  qaoa = MinimumEigenOptimizer(qaoa_mes)    # using QAOA
-  result = qaoa.solve(qubo)
-  return result
-
-
 
 def numpy_for_qubo(qubo, p=None):                      # Classical solver for QUBO
   """
@@ -292,42 +268,6 @@ def get_ordered_solution(dictionary):
     return solution
 
 
-def results_from_QAOA(result):
-    """
-    Fetch the details of the output_ from QAOA.
-
-    :params
-    result: The output_ of QAOA.
-
-    :return
-    solution: a list of binary values corresponding to the solution provided by the output_ of QAOA.
-    fval: The function value (operator value) of the input hamiltonian corresponding to the solution.
-    prob: Probability of the solution.
-    rank: rank of the solution out of all possible binary arrays.
-    time: time taken by the QAOA to compute the solution.
-    """
-    # result = qaoa_result
-    solution = result.x #get_ordered_solution(result.variables_dict)
-    fval = result.fval
-    time = result.min_eigen_solver_result.optimizer_time
-    
-
-    # get rank
-    # flag best
-    probabilities = []
-    for sample in result.samples:
-        probabilities.append(sample.probability)
-        if sample.fval == fval:
-            prob = sample.probability
-    probabilities = sorted(probabilities, reverse=True)
-    rank = probabilities.index(prob)
-
-    return solution, fval, prob, rank, time
-
-
-
-
-
 def results_from_dwave(sample_set, exact=False):
     """
     Fetch the details of the output_ from D-Wave system (Quantum Annealing).
@@ -376,104 +316,3 @@ def results_from_dwave(sample_set, exact=False):
         time = 1
 
     return solution, fval, prob, rank, time
-
-
-def ranking_results_QAOA(qaoa_result, exact_solution=None):
-    """
-    Get the rank of the output_ from qaoa.
-
-    :params
-    qaoa_result: output_ from QAOA.
-    exact_solution: Ground truth solution of the input problem instance.
-
-    :return
-    df: a DataFrame containing the solution, function vallue and the probabilities as columns.
-    """
-    df=pd.DataFrame(columns = ['solution', 'fval', 'prob'])
-
-    for sample in qaoa_result.samples:
-        df = df.append(pd.Series([sample.x, sample.fval, sample.probability], index = df.columns), ignore_index=True)
-    df = df.sort_values(by=["prob"], ascending=False).reset_index()
-    df['rank_prob'] = df.index+1
-
-    df = df.sort_values(by=["fval"], ascending=True).reset_index()
-    df['rank_fval'] = df.index+1
-    df = df.drop(['level_0', 'index'], axis=1)
-    for index, row in df.iterrows():
-        if list(row["solution"])==exact_solution:
-            data_solution = row
-            return df, data_solution
-        else:
-            return df, pd.Series()
-
-def QAOA_optimization(linear, quadratic, n_init=10, p_list=np.arange(1,10), info=''):
-    """
-    A function to find the best paramter choices for QAOA corresponding to the input problem instance.
-
-    :params
-    linear: dictionary of linear coefficient terms in the QUBO formulation of the CSG problem.
-    quadratic: dictionary of quadratic coefficient terms in the QUBO formulation of the CSG problem.
-    n_init: number of initial points.
-    p_list: list if numbers specifying the number of interaction layers in the QAOA circuit.
-
-    :return
-    final_qaoa_result: Soltuion string corresponding to the QAOA output_.
-    optimal_p: Value of p that generated the correct solution.
-    optimal_init: Value of the intial points corresponding to the correct solution.
-    time: Time taken in seconds by QAOA to find the solution.
-    """
-    
-    backend = BasicAer.get_backend('qasm_simulator')
-    
-    # IBMQ.load_account()
-    # provider = IBMQ.get_provider(hub='ibm-q')
-    # provider.backends()
-    # backend = provider.get_backend('ibmq_qasm_simulator')
-    
-    optimizer = COBYLA(maxiter=100, rhobeg=2, tol=1.5)
-
-    qubo = create_QUBO(linear, quadratic)
-
-    op, offset = qubo.to_ising()
-    qp = QuadraticProgram()
-    qp.from_ising(op, offset, linear=True)
-
-    ### Initialisation solution
-    qaoa_mes = QAOA(optimizer=optimizer, reps=1, quantum_instance=backend, initial_point=[0.,0.])
-    qaoa = MinimumEigenOptimizer(qaoa_mes)  # using QAOA
-    final_qaoa_result = qaoa.solve(qubo)
-    optimal_p = 1
-    optimal_init = [0.,0.]
-    time = final_qaoa_result.min_eigen_solver_result.optimizer_time
-
-    
-    min_sol, min_fval, min_prob, min_rank, _ = results_from_QAOA(final_qaoa_result)
-
-
-    for p in p_list:
-        grid_init = [np.random.normal(1, 1, p * 2) for i in range(n_init)]
-        # print('p = ', p)
-        it, min_fval = 0, 0
-        for init in grid_init:
-            it = it + 1
-            
-            qaoa_mes = QAOA(optimizer=optimizer, reps=p,
-                            quantum_instance=backend, initial_point=init)
-
-            qaoa = MinimumEigenOptimizer(qaoa_mes)  # using QAOA
-            qaoa_result = qaoa.solve(qubo)
-
-            _, fval, _, rank, _ = results_from_QAOA(qaoa_result)
-
-            if (min_fval>fval) and (rank<min_rank):
-                min_fval = fval
-                min_rank = rank
-
-                optimal_p = p
-                optimal_init = init
-                final_qaoa_result = qaoa_result
-                
-                time = final_qaoa_result.min_eigen_solver_result.optimizer_time
-                
-    return final_qaoa_result, optimal_p, optimal_init, time
-
