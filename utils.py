@@ -2,7 +2,6 @@ import numpy as np
 import itertools
 import os
 import json
-import networkx as nx
 
 import dimod
 from dwave.system.samplers import DWaveSampler
