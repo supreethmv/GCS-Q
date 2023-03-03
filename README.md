@@ -1,6 +1,6 @@
 # GCS-Q: Quantum-supported Graph Coalition Structure generation
 This repository contains the code to reproduce the results presented in the paper *GCS-Q: Quantum-supported Graph Coalition Structure Generation*, submitted to the 
-[20th ACM International Conference on Computing Frontiers (CF'23)](https://www.computingfrontiers.org/2023/cfp.html).
+[The International Conference on Computational Science 2023 – Prague, Czechia](https://www.iccs-meeting.org/iccs2023/).
 
 # Contents
 [Description](#desc)
