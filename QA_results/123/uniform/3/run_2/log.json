@@ -1,1 +1,0 @@
-{"timing": {"qpu_sampling_time": 955760.0, "qpu_anneal_time_per_sample": 20.0, "qpu_readout_time_per_sample": 198.4, "qpu_access_time": 966532.5, "qpu_access_overhead_time": 2297.5, "qpu_programming_time": 10772.5, "qpu_delay_time_per_sample": 20.54, "total_post_processing_time": 969.0, "post_processing_overhead_time": 969.0}, "problem_id": "39989f00-8cca-4987-a22d-65a7130706ae"}
