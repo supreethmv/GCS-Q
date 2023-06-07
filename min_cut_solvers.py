@@ -402,5 +402,5 @@ def get_linear_quadratic_coeffs(n_agents, induced_subgraph_game):
   linear = qp.objective.linear.coefficients.toarray(order=None, out=None)
   quadratic = qp.objective.quadratic.coefficients.toarray(order=None, out=None)
   linear = {int(idx):-round(value,2) for idx,value in enumerate(linear[0])}
-  quadratic = {(int(iy),int(ix)):-quadratic[iy, ix] for iy, ix in np.ndindex(quadratic.shape) if iy<ix}
+  quadratic = {(int(iy),int(ix)):-quadratic[iy, ix] for iy, ix in np.ndindex(quadratic.shape) if iy<ix and abs(quadratic[iy, ix])}
   return linear, quadratic
